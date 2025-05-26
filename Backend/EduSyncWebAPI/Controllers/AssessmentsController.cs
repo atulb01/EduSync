@@ -29,17 +29,28 @@ namespace EduSyncWebAPI.Controllers
             return await _context.Assessments.ToListAsync();
         }
 
-        // GET: api/Assessments/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Assessment>> GetAssessment(Guid id)
+
+        // GET: api/Assessments/bycourse/{courseId}
+        [HttpGet("bycourse/{courseId}")]
+        public async Task<ActionResult<Assessment>> GetAssessmentByCourse(Guid courseId)
         {
-            var assessment = await _context.Assessments.FindAsync(id);
+            var assessment = await _context.Assessments
+                .FirstOrDefaultAsync(a => a.CourseId == courseId);
 
             if (assessment == null)
             {
                 return NotFound();
             }
 
+            return assessment;
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Assessment>> GetAssessment(Guid id)
+        {
+            var assessment = await _context.Assessments.FindAsync(id);
+            if (assessment == null) return NotFound();
             return assessment;
         }
 
