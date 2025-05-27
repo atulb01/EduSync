@@ -30,23 +30,23 @@ function QuizAttempt() {
     setAnswers(newAnswers);
   };
 
-  const calculateScore = (questions, answers) => {
-    let score = 0;
+  const calculateScore = (questions, answers, maxScore) => {
+    let correct = 0;
     questions.forEach((q, i) => {
       if (
         answers[i] &&
         q.answer &&
         answers[i].trim().toLowerCase() === q.answer.trim().toLowerCase()
       ) {
-        score += 1;
+        correct += 1;
       }
     });
-    return score;
+    return Math.round((correct / questions.length) * maxScore);
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const score = calculateScore(quiz.questions, answers);
+    const score = calculateScore(quiz.questions, answers, quiz.maxScore);
 
     try {
       await API.post('/results', {
@@ -55,42 +55,55 @@ function QuizAttempt() {
         score: score,
         attemptDate: new Date().toISOString().split('T')[0]
       });
-      setMessage('Quiz submitted!');
-      setTimeout(() => navigate('/results'), 2000);
+      setMessage(`Quiz submitted! Your score: ${score}/${quiz.maxScore}`);
+      setTimeout(() => navigate('/results'), 2500);
     } catch (err) {
       console.error('Submission failed:', err);
       setMessage('Submission failed');
     }
   };
 
-  if (!quiz) return <p>Loading quiz...</p>;
+  if (!quiz) {
+    return (
+      <div className="text-center mt-5">
+        <div className="spinner-border text-primary" role="status"></div>
+        <p className="mt-2">Loading quiz...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="col-md-8 offset-md-2 mt-4">
-      <h2>{quiz.title}</h2>
-      {message && <div className="alert alert-info">{message}</div>}
-      <form onSubmit={handleSubmit}>
-        {quiz.questions.map((q, idx) => (
-          <div className="form-group mb-3" key={idx}>
-            <label><strong>{q.question}</strong></label>
-            {q.options.map((opt, i) => (
-              <div className="form-check" key={i}>
-                <input
-                  type="radio"
-                  name={`q-${idx}`}
-                  className="form-check-input"
-                  value={opt}
-                  checked={answers[idx] === opt}
-                  onChange={() => handleChange(opt, idx)}
-                  required
-                />
-                <label className="form-check-label">{opt}</label>
-              </div>
-            ))}
+    <div className="container mt-5">
+      <div className="card shadow p-4 rounded-4">
+        <h2 className="text-center mb-4">{quiz.title}</h2>
+        {message && <div className="alert alert-info text-center">{message}</div>}
+
+        <form onSubmit={handleSubmit}>
+          {quiz.questions.map((q, idx) => (
+            <div className="mb-4" key={idx}>
+              <p className="fw-semibold">{idx + 1}. {q.question}</p>
+              {q.options.map((opt, i) => (
+                <div className="form-check" key={i}>
+                  <input
+                    type="radio"
+                    name={`q-${idx}`}
+                    className="form-check-input"
+                    value={opt}
+                    checked={answers[idx] === opt}
+                    onChange={() => handleChange(opt, idx)}
+                    required
+                  />
+                  <label className="form-check-label">{opt}</label>
+                </div>
+              ))}
+            </div>
+          ))}
+
+          <div className="d-grid">
+            <button className="btn btn-success" type="submit">Submit Quiz</button>
           </div>
-        ))}
-        <button className="btn btn-success" type="submit">Submit</button>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
