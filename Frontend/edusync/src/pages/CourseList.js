@@ -12,22 +12,32 @@ function CourseList() {
   }, []);
 
   return (
-    <div>
-      <h2>Available Courses</h2>
+    <div className="container mt-5">
+      <h2 className="text-center mb-4 fw-bold">Available Courses</h2>
+
       {courses.length === 0 ? (
-        <p>Loading courses...</p>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status" />
+          <p className="mt-2">Loading courses...</p>
+        </div>
       ) : (
-        <ul className="list-group">
+        <div className="row">
           {courses.map(course => (
-            <li key={course.courseId} className="list-group-item">
-              <h5>{course.title}</h5>
-              <p>{course.description}</p>
-              <Link to={`/courses/${course.courseId}`} className="btn btn-primary">
-                View Details
-              </Link>
-            </li>
+            <div key={course.courseId} className="col-md-6 col-lg-4 mb-4">
+              <div className="card shadow-sm h-100">
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{course.title}</h5>
+                  <p className="card-text text-muted">{course.description}</p>
+                  <div className="mt-auto">
+                    <Link to={`/courses/${course.courseId}`} className="btn btn-primary">
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

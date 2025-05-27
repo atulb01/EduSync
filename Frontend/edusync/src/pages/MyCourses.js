@@ -18,61 +18,65 @@ function MyCourses() {
       .catch(console.error);
   }, [user]);
 
-    const deleteCourse = async (courseId) => {
+  const deleteCourse = async (courseId) => {
     try {
-        // 1. Get the assessment for this course
-        const assessmentRes = await API.get(`/assessments/bycourse/${courseId}`);
-        const assessment = assessmentRes.data;
+      const assessmentRes = await API.get(`/assessments/bycourse/${courseId}`);
+      const assessment = assessmentRes.data;
 
-        // 2. If assessment exists, delete its results first
-        if (assessment?.assessmentId) {
-        const resultsRes = await API.get('/results'); // Get all results
+      if (assessment?.assessmentId) {
+        const resultsRes = await API.get('/results');
         const relatedResults = resultsRes.data.filter(
-            r => r.assessmentId === assessment.assessmentId
+          r => r.assessmentId === assessment.assessmentId
         );
 
-        // Delete all related results
         await Promise.all(
-            relatedResults.map(r => API.delete(`/results/${r.resultId}`))
+          relatedResults.map(r => API.delete(`/results/${r.resultId}`))
         );
 
-        // 3. Now delete the assessment
         await API.delete(`/assessments/${assessment.assessmentId}`);
-        }
+      }
 
-        // 4. Now delete the course
-        await API.delete(`/courses/${courseId}`);
-
-        // 5. Update state and show message
-        setCourses(courses.filter(c => c.courseId !== courseId));
-        setMessage('Course, assessment, and related results deleted.');
+      await API.delete(`/courses/${courseId}`);
+      setCourses(courses.filter(c => c.courseId !== courseId));
+      setMessage('Course, assessment, and related results deleted.');
     } catch (err) {
-        console.error("Delete failed:", err.response?.data || err.message);
-        setMessage('Failed to delete course and related data.');
+      console.error("Delete failed:", err.response?.data || err.message);
+      setMessage('Failed to delete course and related data.');
     }
-    };
-
+  };
 
   return (
-    <div className="col-md-10 offset-md-1 mt-4">
-      <h2>My Uploaded Courses</h2>
-      {message && <div className="alert alert-info">{message}</div>}
+    <div className="container mt-5">
+      <div className="text-center mb-4">
+        <h2 className="fw-bold">My Uploaded Courses</h2>
+        {message && <div className="alert alert-info mt-3">{message}</div>}
+      </div>
+
       {courses.length === 0 ? (
-        <p>No courses uploaded yet.</p>
+        <div className="text-center">
+          <p className="text-muted">You haven’t uploaded any courses yet.</p>
+        </div>
       ) : (
-        <ul className="list-group">
+        <div className="row">
           {courses.map(course => (
-            <li key={course.courseId} className="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <h5>{course.title}</h5>
-                <p>{course.description}</p>
+            <div key={course.courseId} className="col-md-6 mb-4">
+              <div className="card shadow-sm h-100">
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{course.title}</h5>
+                  <p className="card-text text-muted">{course.description}</p>
+                  <div className="mt-auto text-end">
+                    <button
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() => deleteCourse(course.courseId)}
+                    >
+                      Delete Course
+                    </button>
+                  </div>
+                </div>
               </div>
-              <button className="btn btn-danger btn-sm" onClick={() => deleteCourse(course.courseId)}>
-                Delete
-              </button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
