@@ -4,3 +4,4 @@ obj
 .git
 .github
 node_modules
+appsettings.json

@@ -23,6 +23,11 @@ function Navbar() {
 
       <div className="collapse navbar-collapse" id="navbarContent">
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          {user && (
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/dashboard">Dashboard</NavLink>
+            </li>
+          )}
           {user?.role === 'Student' && (
             <li className="nav-item">
               <NavLink className="nav-link" to="/courses">Courses</NavLink>

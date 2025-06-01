@@ -47,8 +47,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-app.UseCors("AllowFrontendApp");
-
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
@@ -56,11 +54,10 @@ app.UseCors("AllowFrontendApp");
 //    app.UseSwaggerUI();
 //}
 app.UseRouting();
+app.UseCors("AllowFrontendApp");
 app.UseAuthentication();
-
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
+app.UseHttpsRedirection();
 
 app.MapControllers();
 
