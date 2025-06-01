@@ -14,6 +14,8 @@ import QuizAttempt from './pages/QuizAttempt';
 import Results from './pages/Results';
 import AssessmentUpload from './pages/AssessmentUpload';
 import MyCourses from './pages/MyCourses';
+import Dashboard from './pages/Dashboard';
+import ViewAssessments from './pages/ViewAssessments';
 
 
 function App() {
@@ -61,6 +63,17 @@ function App() {
           <Route path="/my-courses" element={
             <ProtectedRoute allowedRoles={['Instructor']}>
              <MyCourses />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard" element={
+            <ProtectedRoute allowedRoles={['Instructor', 'Student']}>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/view-assessments" element={
+            <ProtectedRoute allowedRoles={['Instructor']}>
+              <ViewAssessments />
             </ProtectedRoute>
           } />
 

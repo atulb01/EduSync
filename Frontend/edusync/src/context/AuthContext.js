@@ -19,16 +19,18 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', res.data.token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
     setUser(res.data.user);
-    navigate(res.data.user.role === 'Instructor' ? '/upload' : '/courses');
+    navigate('/dashboard'); 
   };
+
 
   const register = async (name, email, password, role) => {
     const res = await API.post('/auth/register', { name, email, password, role });
     localStorage.setItem('token', res.data.token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
     setUser(res.data.user);
-    navigate(role === 'Instructor' ? '/upload' : '/courses');
+    navigate('/dashboard'); 
   };
+
 
   const logout = () => {
     localStorage.clear();
