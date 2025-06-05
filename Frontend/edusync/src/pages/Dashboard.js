@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import API from '../api/api';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { FaBook, FaFileAlt, FaUserGraduate, FaCheckCircle, FaClipboardList, FaChartLine } from 'react-icons/fa';
 
 function Dashboard() {
   const { user } = useAuth();
@@ -16,41 +17,79 @@ function Dashboard() {
   }, []);
 
   const instructorCourses = courses.filter(c => c.instructorId === user.userId || c.instructorId === user.id);
-  const instructorAssessments = assessments.filter(a => instructorCourses.some(c => c.courseId === a.courseId));
+  const instructorAssessments = assessments.filter(a =>
+    instructorCourses.some(c => c.courseId === a.courseId)
+  );
 
   const studentResults = results.filter(r => r.userId === user.userId || r.userId === user.id);
-  const avgScore = studentResults.length > 0
-    ? ((studentResults.reduce((sum, r) => sum + r.score, 0) / studentResults.length).toFixed(2))*100
-    : 0;
+  const avgScore =
+    studentResults.length > 0
+      ? ((studentResults.reduce((sum, r) => sum + r.score, 0) / studentResults.length).toFixed(2)) * 1
+      : 0;
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center mb-4 fw-bold">Welcome, {user.name}</h2>
+    <div className="container py-5">
+      <h2 className="text-center mb-5 fw-bold">Welcome, {user.name}</h2>
 
-      {user.role === 'Instructor' ? (
-        <div className="row text-center">
-          <DashboardCard title="Courses Uploaded" count={instructorCourses.length} link="/my-courses" />
-          <DashboardCard title="Assessments Created" count={instructorAssessments.length} link="/view-assessments" />
-          <DashboardCard title="Students Assessed" count={new Set(results.map(r => r.userId)).size} link="/results" />
-        </div>
-      ) : (
-        <div className="row text-center">
-          <DashboardCard title="Available Courses" count={courses.length} link="/courses" />
-          <DashboardCard title="Quizzes Taken" count={studentResults.length} link="/results" />
-          <DashboardCard title="Average Score" count={`${avgScore}%`} link="/results" />
-        </div>
-      )}
+      <div className="row g-4">
+        {user.role === 'Instructor' ? (
+          <>
+            <DashboardCard
+              title="Courses Uploaded"
+              count={instructorCourses.length}
+              icon={<FaBook size={28} className="text-primary" />}
+              link="/my-courses"
+            />
+            <DashboardCard
+              title="Assessments Created"
+              count={instructorAssessments.length}
+              icon={<FaFileAlt size={28} className="text-success" />}
+              link="/view-assessments"
+            />
+            <DashboardCard
+              title="Students Assessed"
+              count={new Set(results.map(r => r.userId)).size}
+              icon={<FaUserGraduate size={28} className="text-info" />}
+              link="/results"
+            />
+          </>
+        ) : (
+          <>
+            <DashboardCard
+              title="Available Courses"
+              count={courses.length}
+              icon={<FaBook size={28} className="text-primary" />}
+              link="/courses"
+            />
+            <DashboardCard
+              title="Quizzes Taken"
+              count={studentResults.length}
+              icon={<FaClipboardList size={28} className="text-warning" />}
+              link="/results"
+            />
+            <DashboardCard
+              title="Average Score"
+              count={`${avgScore}%`}
+              icon={<FaChartLine size={28} className="text-success" />}
+              link="/results"
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
-function DashboardCard({ title, count, link }) {
+function DashboardCard({ title, count, link, icon }) {
   return (
-    <div className="col-md-4 mb-4">
-      <div className="card shadow-sm p-4 rounded-4">
-        <h5 className="mb-2">{title}</h5>
-        <h3 className="text-primary fw-bold">{count}</h3>
-        <Link to={link} className="btn btn-sm btn-outline-primary mt-2">View</Link>
+    <div className="col-md-4">
+      <div className="card h-100 shadow-sm p-4 rounded-4 text-center">
+        <div className="mb-3">{icon}</div>
+        <h5 className="fw-bold mb-1">{title}</h5>
+        <h2 className="text-primary fw-bold">{count}</h2>
+        <Link to={link} className="btn btn-outline-primary btn-sm mt-3">
+          View Details
+        </Link>
       </div>
     </div>
   );
