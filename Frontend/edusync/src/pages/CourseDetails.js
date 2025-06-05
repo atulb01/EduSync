@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/api';
+import { FaFileDownload, FaPlay } from 'react-icons/fa';
 
 function CourseDetails() {
-  const { id } = useParams(); // courseId from route
+  const { id } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
 
@@ -15,16 +16,16 @@ function CourseDetails() {
       });
   }, [id]);
 
-  if (!course) return <p>Loading...</p>;
+  if (!course) return <div className="text-center mt-5">Loading course details...</div>;
 
   return (
-    <div className="col-md-8 offset-md-2 mt-5">
-      <div className="card shadow-lg p-4 rounded-4">
-        <h2 className="mb-3">{course.title}</h2>
-        <p className="text-muted mb-4">{course.description}</p>
+    <div className="container mt-5 mb-5">
+      <div className="card shadow p-4 rounded-4">
+        <h2 className="text-primary mb-3">{course.title}</h2>
+        <p className="text-secondary">{course.description}</p>
 
-        <div className="mb-4">
-          <h5>Course Material</h5>
+        <div className="mt-4">
+          <h5 className="mb-2">📘 Course Material</h5>
           {course.mediaUrl ? (
             <a
               href={course.mediaUrl}
@@ -32,6 +33,7 @@ function CourseDetails() {
               rel="noopener noreferrer"
               className="btn btn-outline-primary"
             >
+              <FaFileDownload className="me-2" />
               View / Download Material
             </a>
           ) : (
@@ -39,12 +41,15 @@ function CourseDetails() {
           )}
         </div>
 
-        <button
-          className="btn btn-success"
-          onClick={() => navigate(`/courses/${id}/quiz`)}
-        >
-          Start Quiz
-        </button>
+        <div className="mt-4 d-grid">
+          <button
+            className="btn btn-success btn-lg"
+            onClick={() => navigate(`/courses/${id}/quiz`)}
+          >
+            <FaPlay className="me-2" />
+            Start Quiz
+          </button>
+        </div>
       </div>
     </div>
   );
